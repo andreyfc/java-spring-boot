@@ -17,20 +17,19 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("v1")
 public class StudentEndPoint {
 
     public StudentEndPoint(StudentRepository studentDAO){this.studentDAO = studentDAO;}
     @Autowired
     private StudentRepository studentDAO;
 
-    @GetMapping
-    @PreAuthorize("hasRole('USER')")
+    @GetMapping(path = "protected/student")
     public ResponseEntity<?> listAll(Pageable pageable) {
         return new ResponseEntity<>(studentDAO.findAll(pageable), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "protected/student/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") Long id,
                                             @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println(userDetails);
@@ -39,27 +38,26 @@ public class StudentEndPoint {
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/findByName/{name}")
+    @GetMapping(path = "protected/student/findByName/{name}")
     public ResponseEntity<?> findStudentsByName(@PathVariable String name) {
         return new ResponseEntity<>(studentDAO.findByNameIgnoreCaseContaining(name), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(path = "admin/student")
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<?> save(@Valid @RequestBody Student student) {
         return new ResponseEntity<>(studentDAO.save(student), HttpStatus.CREATED);
     }
 
-
-    @DeleteMapping(path = "/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(path = "admin/student/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         verifyStudentExists(id);
         studentDAO.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping
+    @PutMapping(path = "admin/student")
     public ResponseEntity<?> update(@RequestBody Student student) {
         verifyStudentExists(student.getId());
         studentDAO.save(student);

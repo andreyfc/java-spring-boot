@@ -19,7 +19,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .anyRequest().authenticated()
+                .antMatchers("/*/protected/**").hasRole("USER")
+                .antMatchers("/*/admin/students/**").hasRole("ADMIN")
                 .and()
                 .httpBasic()
         .and()
@@ -30,12 +31,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
     }
-
-//    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .withUser("andrey").password("{noop}admin").roles("USER")
-//                .and()
-//                .withUser("admin").password("{noop}admin").roles("USER","ADMIN");
-//    }
 }
