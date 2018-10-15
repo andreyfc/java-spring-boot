@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import br.andrey.spring.service.CustomUserDetailService;
+import org.springframework.web.cors.CorsConfiguration;
 
 import static br.andrey.spring.config.SecurityConstants.SIGN_UP_URL;
 
@@ -31,20 +32,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
+        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+                .and().csrf().disable()
+                .authorizeRequests()
                 .antMatchers(HttpMethod.GET, SIGN_UP_URL).permitAll()
                 .antMatchers("/*/protected/**").hasRole("USER")
                 .antMatchers("/*/admin/students/**").hasRole("ADMIN")
                 .and()
                 .addFilter(new JWTAthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(), customUserDetailService));
-        http.authorizeRequests()
-                .antMatchers("/*/protected/**").hasRole("USER")
-                .antMatchers("/*/admin/students/**").hasRole("ADMIN")
-                .and()
-                .httpBasic()
-                .and()
-                .csrf().disable();
     }
 
     @Override
