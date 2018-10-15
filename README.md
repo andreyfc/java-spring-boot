@@ -1,5 +1,5 @@
-JAVA-Spring-Boot-Studies
+JAVA Spring Boot Studies
 
-JSON-Web-Token
+JSON Web Token
 
-Swagger-ApiDoc
+Swagger ApiDoc
